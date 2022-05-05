@@ -15,7 +15,7 @@ class Secret:
             raise Exception(f"'{environment_variable}' environment variable is not set. Please set it before execution.")
 
 
-OAUTH_CREDS_DIR = "creds/google/oauth"
+OAUTH_CREDS_DIR = "gutils/creds/google/oauth"
 GOOGLE_OAUTH_CLIENT_ID = Secret(environment_variable="GOOGLE_OAUTH_CLIENT_ID", required=False).value
 GOOGLE_OAUTH_CLIENT_SECRET = Secret(environment_variable="GOOGLE_OAUTH_CLIENT_SECRET", required=False).value
 GOOGLE_OAUTH_ACCESS_TOKEN = Secret(environment_variable="GOOGLE_OAUTH_ACCESS_TOKEN", required=False).value
