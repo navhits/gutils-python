@@ -17,10 +17,10 @@ def Secret(environment_variable: str,
 
 
 OAUTH_CREDS_DIR = "gutils/creds/google/oauth"
-GOOGLE_OAUTH_CLIENT_ID = Secret(environment_variable="GOOGLE_OAUTH_CLIENT_ID", required=False)
-GOOGLE_OAUTH_CLIENT_SECRET = Secret(environment_variable="GOOGLE_OAUTH_CLIENT_SECRET", required=False)
-GOOGLE_OAUTH_ACCESS_TOKEN = Secret(environment_variable="GOOGLE_OAUTH_ACCESS_TOKEN", required=False)
+GCP_OAUTH_CLIENT_ID = Secret(environment_variable="GCP_OAUTH_CLIENT_ID", required=False)
+GCP_OAUTH_CLIENT_SECRET = Secret(environment_variable="GCP_OAUTH_CLIENT_SECRET", required=False)
 GCP_PROJECT_ID = Secret(environment_variable="GCP_PROJECT_ID", required=False)
+
 GCP_SERVICE_ACCOUNT_PRIVATE_KEY_ID = Secret(environment_variable="GCP_SERVICE_ACCOUNT_PRIVATE_KEY_ID", required=False)
 GCP_SERVICE_ACCOUNT_PRIVATE_KEY = Secret(environment_variable="GCP_SERVICE_ACCOUNT_PRIVATE_KEY", required=False)
 GCP_SERVICE_ACCOUNT_CLIENT_EMAIL = Secret(environment_variable="GCP_SERVICE_ACCOUNT_CLIENT_EMAIL", required=False)
