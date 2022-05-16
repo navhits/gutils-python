@@ -1,5 +1,6 @@
-from abc import abstractmethod
-import os, pickle, json
+import os
+import pickle
+import json
 
 from googleapiclient import discovery
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -8,8 +9,10 @@ from google.oauth2.credentials import Credentials as OauthCredentials
 from google.oauth2.service_account import Credentials as ServiceCredentials
 from httplib2 import Credentials
 
-from ..creds import OAUTH_CREDS_DIR
-from .enums import *
+from gutils.creds import OAUTH_CREDS_DIR
+# pylint: disable=wildcard-import
+# pylint: disable=unused-wildcard-import
+from gutils.services.enums import *
 
 
 class GoogleApiClient:
@@ -18,15 +21,18 @@ class GoogleApiClient:
     """
     def __init__(self, scopes: list, login_type: LoginType, client_config: dict = None) -> None:
         # Client config must be provided if authentication is being done for the first time
-        # Login type is provided so that inherited classes and other helper methods can initialize the client accordingly
+        # Login type is provided so that inherited classes and other helper methods can \
+            # initialize the client accordingly
         self.config = client_config
         self.scopes = scopes
+        self.credentials, self.service = None, None
         if login_type in list(LoginType.__members__):
             self.login_type = login_type
         else:
             raise ValueError(f"{login_type} is not a valid Login type")
-    
-    def oauth2_login(self, token_file: str='token.json.pickle', trigger_new_flow: bool=False) -> Credentials:
+
+    def oauth2_login(self, token_file: str='token.json.pickle', 
+                     trigger_new_flow: bool=False) -> Credentials:
         """
         Authenticates the user using Oauth2 and saves the credentials to a pickle file.
         """
@@ -44,31 +50,34 @@ class GoogleApiClient:
             else:
                 flow = InstalledAppFlow.from_client_config(self.config, scopes = self.scopes)
                 credentials = flow.run_local_server(port=0)
-            
+
             with open(f"{oauth_dir}/{token_file}", "wb") as token:
                 token.write(pickle.dumps(credentials.to_json()))
-        
+
         self.credentials = credentials
         return credentials
-    
+
     def service_account_auth(self) -> Credentials:
         """
         Authenticates the user using Service Account and returns the credentials.
         """
         credentials = None
         try:
-            credentials = ServiceCredentials.from_service_account_info(self.config, scopes = self.scopes)
-        except OSError as e:
-            raise OSError(e)
-        
+            credentials = ServiceCredentials.from_service_account_info(self.config,
+                                                                       scopes = self.scopes)
+        except OSError as exception:
+            raise OSError from exception
+
         self.credentials = credentials
         return credentials
 
     def set_service(self, service_name: str, version: str) -> None:
         """
-        Creates a Google API service Resource object that has necessary methods to interact with the services.
+        Creates a Google API service Resource object that has necessary methods 
+        to interact with the services.
         """
-        self.service = discovery.build(service_name, version, credentials=self.credentials, cache_discovery=False)
+        self.service = discovery.build(service_name, version, credentials=self.credentials,
+                                       cache_discovery=False)
 
     def add_scopes(self, scopes: list, reauth: bool = True) -> None:
         """
@@ -103,9 +112,8 @@ class GoogleApiClient:
                 self.oauth2_login(trigger_new_flow=True)
             elif self.login_type == LoginType.SERVICE_ACCOUNT:
                 self.service_account_auth()
-        
-        
-    def revoke_oauth_permission(self) -> None:
+
+    def revoke_oauth_permission(self) -> None: # pylint: disable=no-self-use
         """
         Revokes the Oauth permission by removing the access token file.
         """
@@ -114,8 +122,12 @@ class GoogleApiClient:
             if content.is_file() and content.name.endswith(".pickle"):
                 os.remove(f"{oauth_dir}/{content.name}")
 
-    @abstractmethod
     def initialize(self):
         """
         Initializes the Google API client.
         """
+        if self.login_type == LoginType.OAUTH2:
+            self.oauth2_login()
+        elif self.login_type == LoginType.SERVICE_ACCOUNT:
+            self.service_account_auth()
+        self.set_service(self.resource_name, self.version) # pylint: disable=no-member
