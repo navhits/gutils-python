@@ -1,3 +1,4 @@
+# pylint: disable=import-error
 from gutils.creds import GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET, GCP_PROJECT_ID
 
 # Template for client config that can be used to initiate a new Oauth2 flow.
@@ -11,7 +12,6 @@ secret = {
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
         "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,
         "redirect_uris": [
-            "urn:ietf:wg:oauth:2.0:oob",
             "http://localhost"
         ]
     }
