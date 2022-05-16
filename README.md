@@ -2,17 +2,32 @@
 
 G-Utils abstracts and presents reusable components of workspace resource based APIs. Currently supports Sheets, and Drive API methods.
 
-`Note: This pacakge is WIP and currently cannot be installed via pip. The repo must be cloned and used as is with the provided instructions.`
-
-## Geting started
-
-### Clone the repo and install dependencies
+## Installation
 
 ```bash
-git clone https://github.com/navhits/gutils-python.git && cd gutils-python
+# Actiate virtual environment
 python3 -m venv venv
 . venv/bin/activate
-pip3 install -r requirements.txt
+
+# Install the package
+pip3 install git+ssh://git@github.com/navhits/gutils-python.git
+```
+
+## Development
+
+```bash
+# Install poetry
+curl -sSL https://install.python-poetry.org | python -
+
+# Clone the repo
+git clone https://github.com/navhits/gutils-python.git && cd gutils-python
+
+# Actiate virtual environment
+python3 -m venv venv
+. venv/bin/activate
+
+# Install dependencies from lock file
+poetry install
 ```
 
 ### Evironment variables
@@ -42,10 +57,14 @@ from gutils.services.sheets import Sheets
 from gutils.services.drive import Drive
 from gutils.creds.google.oauth.client_secret import secret
 
+# Google Sheets
 scopes = ['https://www.googleapis.com/auth/spreadsheets']
 
 sheets = Sheets(scopes = scopes, client_config = secret, login_type="OAUTH2")
 sheets.initialize()
+
+# Google Drive
+scopes = ['https://www.googleapis.com/auth/drive']
 
 drive = Drive(scopes = scopes, client_config = secret, login_type="OAUTH2")
 drive.initialize()
@@ -55,6 +74,7 @@ drive.initialize()
 
 ```python
 sheets.revoke_oauth_permission()
+
 drive.revoke_oauth_permission()
 ```
 
@@ -65,11 +85,15 @@ from gutils.services.sheets import Sheets
 from gutils.services.drive import Drive
 from gutils.creds.google.service_account.service_secret import secret
 
+# Google Sheets
 scopes = ['https://www.googleapis.com/auth/spreadsheets']
 
 sheets = Sheets(scopes = scopes, client_config = secret, login_type="SERVICE_ACCOUNT")
 sheets.initialize()
 
-sheets = Sheets(scopes = scopes, client_config = secret, login_type="SERVICE_ACCOUNT")
-sheets.initialize()
+# Google Drive
+scopes = ['https://www.googleapis.com/auth/drive']
+
+drive = Drive(scopes = scopes, client_config = secret, login_type="SERVICE_ACCOUNT")
+drive.initialize()
 ```
