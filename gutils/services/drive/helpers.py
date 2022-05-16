@@ -1,6 +1,12 @@
+"""
+Some helper functions for Google Drive that isn't part of the API functionality.
+"""
+from typing import Union
+
 from .drive import Drive
 
-def create_nested_drive_folders(self, drive: Drive, folder_paths: str) -> list:
+
+def create_nested_drive_folders(drive: Drive, folder_paths: str) -> list:
     """
     Creates a new folder paths in Google Drive.
     """
@@ -9,15 +15,19 @@ def create_nested_drive_folders(self, drive: Drive, folder_paths: str) -> list:
     folder_paths = folder_paths.split('/')
     next_parent = None
     for folder_path in folder_paths:
-        f = drive.create_folder(folder_path, parent_folder_id=next_parent)
-        next_parent = f.get('id')
-        folders.append(f)
+        folder = drive.create_folder(folder_path, parent_folder_id=next_parent)
+        next_parent = folder.get('id')
+        folders.append(folder)
     return folders
 
-
-def get_drive_folder_id(self, drive: Drive, folder_name: str) -> str:
+#TODO: This method needs to be tested
+def get_drive_folder_id(drive: Drive, folder_name: str) -> Union[str, None]:
     """
-    Gets the folder id from the folder path.
+    Returns the id of the folder with the given name.
     """
-    
-    pass
+    folders = drive.list_folders()
+    if folders:
+        for folder in folders:
+            if folder_name == folder.get('name'):
+                return folder.get('id')
+    return None

@@ -1,3 +1,6 @@
+"""
+Enums for the sheets service.
+"""
 import enum
 
 class MajorDimension(str, enum.Enum):

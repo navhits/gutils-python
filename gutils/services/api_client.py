@@ -1,3 +1,6 @@
+"""
+This module contains the necessay methods for services that require auth to access them.
+"""
 import os
 import pickle
 import json
@@ -31,7 +34,7 @@ class GoogleApiClient:
         else:
             raise ValueError(f"{login_type} is not a valid Login type")
 
-    def oauth2_login(self, token_file: str='token.json.pickle', 
+    def oauth2_login(self, token_file: str='token.json.pickle',
                      trigger_new_flow: bool=False) -> Credentials:
         """
         Authenticates the user using Oauth2 and saves the credentials to a pickle file.
@@ -73,7 +76,7 @@ class GoogleApiClient:
 
     def set_service(self, service_name: str, version: str) -> None:
         """
-        Creates a Google API service Resource object that has necessary methods 
+        Creates a Google API service Resource object that has necessary methods
         to interact with the services.
         """
         self.service = discovery.build(service_name, version, credentials=self.credentials,
@@ -83,7 +86,7 @@ class GoogleApiClient:
         """
         Adds a new scope to the list of scopes.
         """
-        if not isinstance(scopes, list): 
+        if not isinstance(scopes, list):
             raise TypeError(f"Scopes must be provided as list. {type(scopes)} was provided.")
         if scopes:
             for scope in scopes:
@@ -94,13 +97,13 @@ class GoogleApiClient:
             if self.login_type == LoginType.OAUTH2:
                 self.oauth2_login(trigger_new_flow=True)
             elif self.login_type == LoginType.SERVICE_ACCOUNT:
-                self.service_account_auth()   
+                self.service_account_auth()
 
     def remove_scopes(self, scopes: list, reauth: bool = True) -> None:
         """
         Removes the given scopes from the set scopes.
         """
-        if not isinstance(scopes, list): 
+        if not isinstance(scopes, list):
             raise TypeError(f"Scopes must be provided as list. {type(scopes)} was provided.")
         if scopes:
             for scope in scopes:

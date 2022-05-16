@@ -1,12 +1,18 @@
+"""
+The Sheets module contains methods that let interact programmatically with Google Sheets.
+"""
 from ..api_client import GoogleApiClient
 # pylint: disable=wildcard-import
 # pylint: disable=unused-wildcard-import
 from .enums import *
 from ..enums import *
 
+# pylint: disable=line-too-long
 # pylint: disable=no-member
 class Sheets(GoogleApiClient):
-
+    """
+    The Sheets class extends the GoogleApiClient class to authenticate to the Sheets APIs
+    """
     resource_name = "sheets"
     version = "v4"
 
@@ -29,7 +35,7 @@ class Sheets(GoogleApiClient):
                 range=sheet_range, majorDimension=dimension.value,
                 valueRenderOption=value_render_option.value,
                 dateTimeRenderOption=datetime_render_option.value).execute().get('values', [])
-    
+
     def update(self, sheet_id: str, values: list = None, sheet_range: str = "Sheet1",
         dimension: MajorDimension = MajorDimension.ROWS,
         input_option: ValueInputOption = ValueInputOption.RAW,
@@ -42,8 +48,8 @@ class Sheets(GoogleApiClient):
             "majorDimension": dimension.value,
             "values": values if values else []
         }
-        return self.service.spreadsheets().values().update(spreadsheetId=sheet_id, 
-                    range=sheet_range, valueInputOption=input_option.value, 
+        return self.service.spreadsheets().values().update(spreadsheetId=sheet_id,
+                    range=sheet_range, valueInputOption=input_option.value,
                     responseValueRenderOption=response_render_option.value,
                     responseDateTimeRenderOption=response_datetime_render_option.value,
                     body=body).execute()

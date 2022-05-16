@@ -1,3 +1,6 @@
+"""
+All constants, credentials and secrets go here.
+"""
 import os
 from typing import Optional
 

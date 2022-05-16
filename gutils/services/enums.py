@@ -1,3 +1,6 @@
+"""
+All global enums goes here.
+"""
 import enum
 
 class LoginType(str, enum.Enum):
@@ -65,7 +68,7 @@ class MimeType(str, enum.Enum):
     TEXT_CSS = "text/css"
     TEXT_PLAIN = "text/plain"
     TEXT_TSV = "text/tab-separated-values"
-    
+
 class Operator(str, enum.Enum):
     """
     Enum for the query operations.

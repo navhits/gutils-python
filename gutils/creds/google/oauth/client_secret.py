@@ -1,3 +1,6 @@
+"""
+Oauth configuration file for Google APIs.
+"""
 # pylint: disable=import-error
 from gutils.creds import GCP_OAUTH_CLIENT_ID, GCP_OAUTH_CLIENT_SECRET, GCP_PROJECT_ID
 

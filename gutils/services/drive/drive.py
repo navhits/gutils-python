@@ -1,3 +1,6 @@
+"""
+The Drive module contains methods that let interact programmatically with Google Drive.
+"""
 import io
 import shutil
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
@@ -8,9 +11,12 @@ from .query import Query
 from ..api_client import GoogleApiClient
 from ..enums import *
 
+# pylint: disable=line-too-long
 # pylint: disable=no-member
 class Drive(GoogleApiClient):
-
+    """
+    The Drive class extends the GoogleApiClient class to authenticate to the Drive APIs
+    """
     resource_name = "drive"
     version = "v3"
 
@@ -57,7 +63,7 @@ class Drive(GoogleApiClient):
 
         return self.service.files().create(body=meta_body, media_body=media_body).execute()
 
-    def create_folder(self, folder_name: str, parent_folder_id: str = None, 
+    def create_folder(self, folder_name: str, parent_folder_id: str = None,
                             ignore_duplicates: bool = False) -> dict:
         """
         Creates a new folder in Google Drive. Optionally supports to ignore duplicate folders.
@@ -103,7 +109,7 @@ class Drive(GoogleApiClient):
 
         while True:
             response = self.service.files().list(q=query, corpora=corpora,
-                                    drive_id=drive_id, spaces='drive', 
+                                    drive_id=drive_id, spaces='drive',
                                     fields='nextPageToken, files(id, name, parents)',
                                     pageSize=1000, pageToken=page_token).execute()
 
@@ -120,7 +126,7 @@ class Drive(GoogleApiClient):
         """
         Returns a list of folder resources in Google Drive.
         """
-
+        # pylint: disable=not-callable
         default_query = Query().FIELD(QueryFields.MIME_TYPE).EQUALS(MimeType.FOLDER.value)
         if query:
             query = f"{default_query} {Operator.AND} {query}"
@@ -136,7 +142,7 @@ class Drive(GoogleApiClient):
 
         default_query = Query().FIELD(QueryFields.MIME_TYPE).NOT_EQUALS.VALUE(MimeType.FOLDER.value).AND.FIELD(QueryFields.MIME_TYPE).NOT_EQUALS.VALUE(MimeType.APPLICATION_GDRIVE_SHORTCUT.value)
         if query:
-            query = f"{default_query} {Operator.AND} {query}"    
+            query = f"{default_query} {Operator.AND} {query}"
         else:
             query = default_query
 
@@ -146,7 +152,7 @@ class Drive(GoogleApiClient):
         """
         Downloads a file from Google Drive.
         """
-        
+
         if not output_file:
             output_file = self.get(file_id).get("name")
 
@@ -158,8 +164,8 @@ class Drive(GoogleApiClient):
         while done is False:
             _, done = downloader.next_chunk()
         file_object.seek(0)
-        with open(output_file, 'wb') as f:
-            shutil.copyfileobj(file_object, f)
+        with open(output_file, 'wb') as file_:
+            shutil.copyfileobj(file_object, file_)
 
     def move_to_folder(self, file_id: str, folder_id: str):
         """

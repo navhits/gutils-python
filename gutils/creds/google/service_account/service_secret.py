@@ -1,3 +1,6 @@
+"""
+Service account configuration for Google APIs.
+"""
 # pylint: disable=import-error
 from gutils.creds import (GCP_PROJECT_ID, GCP_SERVICE_ACCOUNT_CLIENT_ID,
                       GCP_SERVICE_ACCOUNT_CLIENT_EMAIL, GCP_SERVICE_ACCOUNT_PRIVATE_KEY_ID,
