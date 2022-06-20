@@ -2,7 +2,8 @@
 Oauth configuration file for Google APIs.
 """
 # pylint: disable=import-error
-from gutils.creds import GCP_OAUTH_CLIENT_ID, GCP_OAUTH_CLIENT_SECRET, GCP_PROJECT_ID
+from gutils.creds import (GCP_OAUTH_CLIENT_ID, GCP_OAUTH_CLIENT_SECRET,
+                          GCP_PROJECT_ID, GCP_OAUTH_AUTH_TOKEN, GCP_OAUTH_REFRESH_TOKEN)
 
 # Template for client config that can be used to initiate a new Oauth2 flow.
 
@@ -19,3 +20,17 @@ secret = {
         ]
     }
 }
+
+token = {
+    "token": GCP_OAUTH_AUTH_TOKEN,
+    "refresh_token": GCP_OAUTH_REFRESH_TOKEN,
+    "client_id": GCP_OAUTH_CLIENT_ID,
+    "client_secret": GCP_OAUTH_CLIENT_SECRET,
+}
+
+
+def get_secret() -> dict:
+    return secret
+
+def get_token() -> dict:
+    return token

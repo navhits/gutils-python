@@ -18,3 +18,6 @@ secret ={
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
   "client_x509_cert_url": GCP_SERVICE_ACCOUNT_CLIENT_CERT_URL
 }
+
+def get_secret() -> dict:
+    return secret
