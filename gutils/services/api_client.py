@@ -13,6 +13,7 @@ from google.oauth2.service_account import Credentials as ServiceCredentials
 from httplib2 import Credentials
 
 from gutils.creds import OAUTH_CREDS_DIR
+from gutils.creds.google import oauth
 # pylint: disable=wildcard-import
 # pylint: disable=unused-wildcard-import
 from gutils.services.enums import *
@@ -22,40 +23,68 @@ class GoogleApiClient:
     """
     Abstracted Google API client that implements Oauth2 and Service Account authentication
     """
-    def __init__(self, scopes: list, login_type: LoginType, client_config: dict = None) -> None:
+    def __init__(self, scopes: list, login_type: LoginType,
+                 client_config: dict = None, token_file: str='token.json.pickle') -> None:
         # Client config must be provided if authentication is being done for the first time
         # Login type is provided so that inherited classes and other helper methods can \
             # initialize the client accordingly
         self.config = client_config
         self.scopes = scopes
         self.credentials, self.service = None, None
+        self.token_file = token_file
         if login_type in list(LoginType.__members__):
             self.login_type = login_type
         else:
             raise ValueError(f"{login_type} is not a valid Login type")
 
-    def oauth2_login(self, token_file: str='token.json.pickle',
-                     trigger_new_flow: bool=False) -> Credentials:
+    def _get_authz_token(self) -> bool:
+        """
+        Checks if the authorization token is available.
+        """
+        token = oauth.credentials.get_token()
+        if token.get("token") and token.get("refresh_token"):
+            return token
+        oauth_dir = OAUTH_CREDS_DIR
+        if os.path.exists(f"{oauth_dir}/{self.token_file}"):
+            try:
+                with open(f"{oauth_dir}/{self.token_file}", "rb") as pickled_file:
+                    token = json.loads(pickle.load(pickled_file))
+                return token
+            except (Exception, EOFError):
+                os.remove(f"{oauth_dir}/{self.token_file}")
+                return None
+        return None
+
+    def _set_authz_token(self, token: dict) -> None:
+        """
+        Sets the authorization token.
+        """
+        oauth_dir = OAUTH_CREDS_DIR
+        with open(f"{oauth_dir}/{self.token_file}", "wb") as pickled_file:
+            pickled_file.write(pickle.dumps(token))
+
+    def oauth2_login(self, trigger_new_flow: bool=False) -> Credentials:
         """
         Authenticates the user using Oauth2 and saves the credentials to a pickle file.
         """
         credentials = None
-        oauth_dir = OAUTH_CREDS_DIR
+        
         if trigger_new_flow:
             self.revoke_oauth_permission()
-        if os.path.exists(f"{oauth_dir}/{token_file}"):
-            with open(f"{oauth_dir}/{token_file}", "rb") as pickled_file:
-                token = json.loads(pickle.load(pickled_file))
+
+        token = self._get_authz_token()
+        if token:
             credentials = OauthCredentials.from_authorized_user_info(token, self.scopes)
         if not credentials or not credentials.valid:
             if credentials and credentials.expired and credentials.refresh_token:
                 credentials.refresh(Request())
             else:
+                if not self.config:
+                    raise ValueError("Missing client config for Oauth2 login")
                 flow = InstalledAppFlow.from_client_config(self.config, scopes = self.scopes)
                 credentials = flow.run_local_server(port=0)
 
-            with open(f"{oauth_dir}/{token_file}", "wb") as token:
-                token.write(pickle.dumps(credentials.to_json()))
+            self._set_authz_token(credentials.to_json())
 
         self.credentials = credentials
         return credentials
@@ -65,6 +94,8 @@ class GoogleApiClient:
         Authenticates the user using Service Account and returns the credentials.
         """
         credentials = None
+        if not self.config:
+            raise ValueError("Missing client config for service account")
         try:
             credentials = ServiceCredentials.from_service_account_info(self.config,
                                                                        scopes = self.scopes)
