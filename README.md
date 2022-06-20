@@ -55,19 +55,28 @@ export GCP_SERVICE_ACCOUNT_CLIENT_CERT_URL=dummy-cert-url
 ```python
 from gutils.services.sheets import Sheets
 from gutils.services.drive import Drive
-from gutils.creds.google.oauth.client_secret import secret
+from gutils.creds.google.oauth.credentials import get_secret
 
 # Google Sheets
 scopes = ['https://www.googleapis.com/auth/spreadsheets']
 
-sheets = Sheets(scopes = scopes, client_config = secret, login_type="OAUTH2")
+sheets = Sheets(scopes = scopes, client_config = get_secret(), login_type="OAUTH2")
 sheets.initialize()
 
 # Google Drive
 scopes = ['https://www.googleapis.com/auth/drive']
 
-drive = Drive(scopes = scopes, client_config = secret, login_type="OAUTH2")
+drive = Drive(scopes = scopes, client_config = get_secret(), login_type="OAUTH2")
 drive.initialize()
+```
+
+### Using Oauth Authorization token directly
+
+If you set these additional environment variables if you have them, to skip the oauth flow
+
+```bash
+export GCP_OAUTH_AUTH_TOKEN=dummy-token
+export GCP_OAUTH_REFRESH_TOKEN=dummy-refresh-token
 ```
 
 ### Revoking an Oauth permission
@@ -78,22 +87,24 @@ sheets.revoke_oauth_permission()
 drive.revoke_oauth_permission()
 ```
 
+Note: revoke_oauth_permission() will not have effect if environment variables `GCP_OAUTH_AUTH_TOKEN` and `GCP_OAUTH_REFRESH_TOKEN` are set.
+
 ### Service Account Login
 
 ```python
 from gutils.services.sheets import Sheets
 from gutils.services.drive import Drive
-from gutils.creds.google.service_account.service_secret import secret
+from gutils.creds.google.service_account.credentials import get_secret
 
 # Google Sheets
 scopes = ['https://www.googleapis.com/auth/spreadsheets']
 
-sheets = Sheets(scopes = scopes, client_config = secret, login_type="SERVICE_ACCOUNT")
+sheets = Sheets(scopes = scopes, client_config = get_secret(), login_type="SERVICE_ACCOUNT")
 sheets.initialize()
 
 # Google Drive
 scopes = ['https://www.googleapis.com/auth/drive']
 
-drive = Drive(scopes = scopes, client_config = secret, login_type="SERVICE_ACCOUNT")
+drive = Drive(scopes = scopes, client_config = get_secret(), login_type="SERVICE_ACCOUNT")
 drive.initialize()
 ```
