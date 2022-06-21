@@ -3,6 +3,9 @@ name = "gutils-python"
 version = "0.0.1"
 description = "G-Utils abstracts and presents reusable components of workspace resource based APIs."
 authors = ["Naveen S <dev@navs.page>"]
+packages = [
+    { include = "gutils" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
