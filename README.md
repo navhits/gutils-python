@@ -10,24 +10,7 @@ python3 -m venv venv
 . venv/bin/activate
 
 # Install the package
-pip3 install git+ssh://git@github.com/navhits/gutils-python.git
-```
-
-## Development
-
-```bash
-# Install poetry
-curl -sSL https://install.python-poetry.org | python -
-
-# Clone the repo
-git clone https://github.com/navhits/gutils-python.git && cd gutils-python
-
-# Actiate virtual environment
-python3 -m venv venv
-. venv/bin/activate
-
-# Install dependencies from lock file
-poetry install
+pip3 install git+https://github.com/navhits/gutils-python.git
 ```
 
 ### Evironment variables
@@ -79,6 +62,27 @@ export GCP_OAUTH_AUTH_TOKEN=dummy-token
 export GCP_OAUTH_REFRESH_TOKEN=dummy-refresh-token
 ```
 
+Alternatively this can be programatically done. Example code below.
+
+```python
+from gutils.services.sheets import Sheets
+
+secret = {
+    "refresh_token": "dummy-refresh-token",
+    "client_id": "dummy-client-id",
+    "client_secret": "dummy-client-secret",
+    "token": "dummy-token" # Optional
+}
+
+# Google Sheets
+scopes = ['https://www.googleapis.com/auth/spreadsheets']
+
+sheets = Sheets(scopes = scopes, login_type="OAUTH2")
+sheets.set_authz_token(secret) # This is where the secret goes
+sheets.initialize()
+
+```
+
 ### Revoking an Oauth permission
 
 ```python
@@ -107,4 +111,40 @@ scopes = ['https://www.googleapis.com/auth/drive']
 
 drive = Drive(scopes = scopes, client_config = get_secret(), login_type="SERVICE_ACCOUNT")
 drive.initialize()
+```
+
+## Development
+
+```bash
+# Install poetry
+curl -sSL https://install.python-poetry.org | python -
+
+# Clone the repo
+git clone https://github.com/navhits/gutils-python.git && cd gutils-python
+
+# Actiate virtual environment
+python3 -m venv venv
+. venv/bin/activate
+
+# Install dependencies from lock file
+poetry install
+```
+
+If you want to add a new service, you can add it to the `services` directory and follow this directory structure.
+
+```bash
+.
+├── ...
+└── gutils
+    ├── ...
+    └── services
+        ├── ...
+        ├── drive
+        │   └── ...
+        ├── sheets
+        │   └── ...
+        └── <new_service>
+            ├── __init__.py
+            ├── <new_service>.py
+            └── <other_modules>.py
 ```

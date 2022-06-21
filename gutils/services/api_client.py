@@ -42,7 +42,7 @@ class GoogleApiClient:
         Checks if the authorization token is available.
         """
         token = oauth.credentials.get_token()
-        if token.get("token") and token.get("refresh_token"):
+        if token.get("refresh_token") and token.get("client_id") and token.get("client_secret"):
             return token
         oauth_dir = OAUTH_CREDS_DIR
         if os.path.exists(f"{oauth_dir}/{self.token_file}"):
@@ -55,7 +55,7 @@ class GoogleApiClient:
                 return None
         return None
 
-    def _set_authz_token(self, token: dict) -> None:
+    def set_authz_token(self, token: dict) -> None:
         """
         Sets the authorization token.
         """
@@ -84,7 +84,7 @@ class GoogleApiClient:
                 flow = InstalledAppFlow.from_client_config(self.config, scopes = self.scopes)
                 credentials = flow.run_local_server(port=0)
 
-            self._set_authz_token(credentials.to_json())
+            self.set_authz_token(credentials.to_json())
 
         self.credentials = credentials
         return credentials
