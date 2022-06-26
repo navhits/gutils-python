@@ -1,4 +1,4 @@
 """
 This module supports Google Drive APIs v3
 """
-from .drive import Drive
+from gutils.services.drive.v3 import DriveClient

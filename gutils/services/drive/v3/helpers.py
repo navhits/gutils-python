@@ -3,7 +3,7 @@ Some helper functions for Google Drive that isn't part of the API functionality.
 """
 from typing import Union
 
-from .drive import Drive
+from gutils.services.drive.v3.drive import Drive
 
 
 def create_nested_drive_folders(drive: Drive, folder_paths: str) -> list:

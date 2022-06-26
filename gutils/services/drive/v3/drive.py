@@ -7,18 +7,20 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 # pylint: disable=wildcard-import
 # pylint: disable=unused-wildcard-import
-from .query import Query
-from ..api_client import GoogleApiClient
-from ..enums import *
+from gutils.services.drive.v3.query import Query
+from gutils.services.enums import *
 
 # pylint: disable=line-too-long
 # pylint: disable=no-member
-class Drive(GoogleApiClient):
+class DriveClient:
     """
     The Drive class extends the GoogleApiClient class to authenticate to the Drive APIs
     """
     resource_name = "drive"
     version = "v3"
+    
+    def __init__(self, service: object) -> None:
+        self.service = service
 
     def list_drives(self) -> list:
         """

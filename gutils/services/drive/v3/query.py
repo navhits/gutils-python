@@ -5,7 +5,7 @@ import typing
 import datetime
 import warnings
 
-from ..enums import QueryFields, Operator, MimeType
+from gutils.services.enums import QueryFields, Operator, MimeType
 
 # pylint: disable=invalid-name
 class Query:
