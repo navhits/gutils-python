@@ -1,9 +1,10 @@
 """
 This module contains the necessay methods for services that require auth to access them.
 """
-import os
-import pickle
+import json
+from pathlib import Path
 import typing
+from importlib import import_module
 
 from googleapiclient import discovery
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -13,6 +14,7 @@ from google.oauth2.service_account import Credentials as ServiceCredentials
 from httplib2 import Credentials
 
 from gutils.creds.google.oauth import Oauth2Creds, Oauth2Token
+from gutils.creds.google.service_account import ServiceAccountCreds
 # pylint: disable=wildcard-import
 # pylint: disable=unused-wildcard-import
 from gutils.services.enums import *
@@ -24,24 +26,22 @@ class GoogleApiClient:
     """
     oauth_revoked: bool = False
     
-    def __init__(self, scopes: list = None, login_type: LoginType = LoginType.OAUTH2,
-                 client_id: str = None, client_secret: str = None, 
-                 project_id: str = None, auth_token: str = None, refresh_token = None) -> None:
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.project_id = project_id
-        self.auth_token = auth_token
-        self.refresh_token = refresh_token
-        self.config = self.set_client_config(self.client_id, 
-                        self.client_secret, self.project_id)
-        self.token = self.set_authz_token(self.client_id, self.client_secret, 
-                                          self.refresh_token, self.auth_token)
+    def __init__(self, scopes: list = None, config: typing.Union[Oauth2Creds, ServiceAccountCreds] = None,
+                 token: Oauth2Token = None, login_type: LoginType = LoginType.OAUTH2) -> None:
+
+        self.token = None
+        self.config = None
         self.scopes = scopes
-        self.credentials, self.service = None, None
+        self.credentials = None
         if login_type in list(LoginType.__members__):
             self.login_type = login_type
         else:
             raise ValueError(f"{login_type} is not a valid Login type")
+
+        if login_type == LoginType.SERVICE_ACCOUNT:
+            self.token = token.get_token()
+        if login_type == LoginType.OAUTH2:
+            self.config = config.get_secret()
 
     def _get_client_config(self) -> typing.Union[dict, None]:
         """
@@ -53,7 +53,8 @@ class GoogleApiClient:
         """
         Sets a given client configuration
         """
-        return Oauth2Creds(client_id, client_secret, project_id).get_secret()
+        creds = Oauth2Creds(client_id, client_secret, project_id)
+        self.config = creds.get_secret()
         
     def _get_authz_token(self) -> typing.Union[dict, None]:
         """
@@ -61,11 +62,13 @@ class GoogleApiClient:
         """
         return self.token if self.token else Oauth2Token().get_token()
 
-    def set_authz_token(self, client_id: str, client_secret: str, refresh_token: str, auth_token: str = None) -> None:
+    def set_authz_token(self, client_id: str, client_secret: str,
+                        refresh_token: str, token: str = None, **kwargs) -> None:
         """
         Sets the authorization token.
         """
-        return Oauth2Token(client_id, client_secret, auth_token, refresh_token).set_token()
+        token = Oauth2Token(client_id, client_secret, token, refresh_token)
+        self.token = token.get_token()
 
     def oauth2_login(self, trigger_new_flow: bool=False) -> Credentials:
         """
@@ -91,7 +94,9 @@ class GoogleApiClient:
                 flow = InstalledAppFlow.from_client_config(self.config, scopes = self.scopes)
                 credentials = flow.run_local_server(port=0)
 
-            self.set_authz_token(credentials.to_json())
+            creds = json.loads(credentials.to_json())
+            
+            self.set_authz_token(**creds)
 
         self.credentials = credentials
         self.oauth_revoked = False
@@ -112,15 +117,30 @@ class GoogleApiClient:
 
         self.credentials = credentials
         return credentials
-
-    def set_service(self, service_name: str, version: str) -> None:
+            
+    def create_service(self, service_name: str, version: str) -> typing.Union[object, None]:
         """
-        Creates a Google API service Resource object that has necessary methods
+        Creates and returns a Google API service Resource object that has necessary methods
         to interact with the services.
         """
-        self.service = discovery.build(service_name, version, credentials=self.credentials,
+        service = discovery.build(service_name, version, credentials=self.credentials,
                                        cache_discovery=False)
+        if service:
+            with open(Path(__file__).parent.absolute().joinpath("services.json"), mode="r") as json_doc:
+                services = json.load(json_doc)
+            for name, attributes in services.get("service").items():
+                if name == service_name.lower() and attributes.get("version") == version:
+                    path = f"{services.get('entrypoint')}.{attributes.get('module')}.{attributes.get('version')}.{attributes.get('module')}"
+                    module = import_module(path)
+                    client = getattr(module, f"{attributes.get('class')}")
+                    return client(service=service)
+        return None            
 
+    def return_service(self, service_name: str, version: str) -> typing.Union[object, None]:
+        service = discovery.build(service_name, version, credentials=self.credentials,
+                                       cache_discovery=False)
+        return service if service else None
+    
     def add_scopes(self, scopes: list) -> None:
         """
         Adds a new scope to the list of scopes.
@@ -170,4 +190,3 @@ class GoogleApiClient:
             self.oauth2_login()
         elif self.login_type == LoginType.SERVICE_ACCOUNT:
             self.service_account_auth()
-        self.set_service(self.resource_name, self.version) # pylint: disable=no-member
