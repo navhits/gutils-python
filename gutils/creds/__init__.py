@@ -17,17 +17,3 @@ def Secret(environment_variable: str,
     if required and not value:
         raise Exception(f"'{environment_variable}' environment variable is not set. Please set it before execution.")
     return value
-
-
-OAUTH_CREDS_DIR = "gutils/creds/google/oauth"
-GCP_OAUTH_CLIENT_ID = Secret(environment_variable="GCP_OAUTH_CLIENT_ID", required=False)
-GCP_OAUTH_CLIENT_SECRET = Secret(environment_variable="GCP_OAUTH_CLIENT_SECRET", required=False)
-GCP_OAUTH_AUTH_TOKEN = Secret(environment_variable="GCP_OAUTH_AUTH_TOKEN", required=False)
-GCP_OAUTH_REFRESH_TOKEN = Secret(environment_variable="GCP_OAUTH_REFRESH_TOKEN", required=False)
-GCP_PROJECT_ID = Secret(environment_variable="GCP_PROJECT_ID", required=False)
-
-GCP_SERVICE_ACCOUNT_PRIVATE_KEY_ID = Secret(environment_variable="GCP_SERVICE_ACCOUNT_PRIVATE_KEY_ID", required=False)
-GCP_SERVICE_ACCOUNT_PRIVATE_KEY = Secret(environment_variable="GCP_SERVICE_ACCOUNT_PRIVATE_KEY", required=False)
-GCP_SERVICE_ACCOUNT_CLIENT_EMAIL = Secret(environment_variable="GCP_SERVICE_ACCOUNT_CLIENT_EMAIL", required=False)
-GCP_SERVICE_ACCOUNT_CLIENT_ID = Secret(environment_variable="GCP_SERVICE_ACCOUNT_CLIENT_ID", required=False)
-GCP_SERVICE_ACCOUNT_CLIENT_CERT_URL = Secret(environment_variable="GCP_SERVICE_ACCOUNT_CLIENT_CERT_URL", required=False)
