@@ -10,7 +10,9 @@ python3 -m venv venv
 . venv/bin/activate
 
 # Install the package
-pip3 install git+https://github.com/navhits/gutils-python.git
+# Note: Use till commit hash `ff58e1d4da3c203790779f53f9ec884e7388298d` as its stable to use for now.
+
+pip3 install git+https://github.com/navhits/gutils-python.git@ff58e1d4da3c203790779f53f9ec884e7388298d
 ```
 
 ### Evironment variables
@@ -36,21 +38,27 @@ export GCP_SERVICE_ACCOUNT_CLIENT_CERT_URL=dummy-cert-url
 ### Oauth2 login
 
 ```python
-from gutils.services.sheets import Sheets
-from gutils.services.drive import Drive
-from gutils.creds.google.oauth.credentials import get_secret
+from gutils.services.api_client import GoogleApiClient
+from gutils.services.enums import LoginType
+from gutils.creds.google.oauth import Oauth2Creds
 
-# Google Sheets
-scopes = ['https://www.googleapis.com/auth/spreadsheets']
+# Sample scopes
+scopes = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
 
-sheets = Sheets(scopes = scopes, client_config = get_secret(), login_type="OAUTH2")
-sheets.initialize()
+config = Oauth2Creds(
+    client_id = "dummy-client-id"
+    client_secret = "dummy-client-secret"
+    project_id = "dummy-project-id"
+)
 
-# Google Drive
-scopes = ['https://www.googleapis.com/auth/drive']
+# If environment variables are set,
+config = Oauth2Creds()
 
-drive = Drive(scopes = scopes, client_config = get_secret(), login_type="OAUTH2")
-drive.initialize()
+client = GoogleApiClient(scopes=scopes, config=config, login_type=LoginType.OAUTH2)
+client.initialize()
+
+# Example to create a Google Sheets Client instance
+service = client.create_service("sheets", "v4")
 ```
 
 ### Using Oauth Authorization token directly
@@ -58,59 +66,73 @@ drive.initialize()
 If you set these additional environment variables if you have them, to skip the oauth flow
 
 ```bash
-export GCP_OAUTH_AUTH_TOKEN=dummy-token
+export GCP_OAUTH_AUTH_TOKEN=dummy-token # Optional
 export GCP_OAUTH_REFRESH_TOKEN=dummy-refresh-token
 ```
 
 Alternatively this can be programatically done. Example code below.
 
 ```python
-from gutils.services.sheets import Sheets
+from gutils.services.api_client import GoogleApiClient
+from gutils.services.enums import LoginType
+from gutils.creds.google.oauth import Oauth2Token
 
-secret = {
-    "refresh_token": "dummy-refresh-token",
-    "client_id": "dummy-client-id",
-    "client_secret": "dummy-client-secret",
-    "token": "dummy-token" # Optional
-}
 
-# Google Sheets
-scopes = ['https://www.googleapis.com/auth/spreadsheets']
+token = Oauth2Token(
+    client_id = "dummy-client-id"
+    client_secret = "dummy-client-secret"
+    token = "dummy-auth-token" # Optional
+    refresh_token = "dummy-refresh-token"
+)
 
-sheets = Sheets(scopes = scopes, login_type="OAUTH2")
-sheets.set_authz_token(secret) # This is where the secret goes
-sheets.initialize()
+# If environment variables are set,
+token = Oauth2Token()
+
+scopes = ['https://www.googleapis.com/auth/spreadsheets'] # Note: The scopes authorised to this token will only work.
+                                                          # If new scope needs to be added, use `client.add_scope()` which will trigger a new oauth flow and it will require 
+                                                          # `gutils.creds.google.oauth.Oauth2Creds` to be set.
+
+client = GoogleApiClient(scopes=scopes, config=config, login_type=LoginType.OAUTH2)
+client.set_authz_token(token)
+client.initialize()
+
+# Example to create a Google Sheets Client instance
+service = client.create_service("sheets", "v4")
 
 ```
 
 ### Revoking an Oauth permission
 
 ```python
-sheets.revoke_oauth_permission()
-
-drive.revoke_oauth_permission()
+client.revoke_oauth_permission()
 ```
-
-Note: revoke_oauth_permission() will not have effect if environment variables `GCP_OAUTH_AUTH_TOKEN` and `GCP_OAUTH_REFRESH_TOKEN` are set.
 
 ### Service Account Login
 
 ```python
-from gutils.services.sheets import Sheets
-from gutils.services.drive import Drive
-from gutils.creds.google.service_account.credentials import get_secret
+from gutils.services.api_client import GoogleApiClient
+from gutils.services.enums import LoginType
+from gutils.creds.google.service_account import ServiceAccountCreds
 
-# Google Sheets
 scopes = ['https://www.googleapis.com/auth/spreadsheets']
 
-sheets = Sheets(scopes = scopes, client_config = get_secret(), login_type="SERVICE_ACCOUNT")
-sheets.initialize()
+config =  ServiceAccountCreds(
+    project_id = "dummy=project-id", 
+    private_key_id = "dummy-private-key-id", 
+    private_key = "dummy-private-key-id", 
+    client_email = "dummy-client_email", 
+    client_id = "dummy_service_account_client_id",
+    client_x509_cert_url = "dummy-cert-url"
+)
 
-# Google Drive
-scopes = ['https://www.googleapis.com/auth/drive']
+# If environment variables are set,
+config = ServiceAccountCreds()
 
-drive = Drive(scopes = scopes, client_config = get_secret(), login_type="SERVICE_ACCOUNT")
-drive.initialize()
+client = GoogleApiClient(scopes=scopes, config=config, LoginType.SERVICE_ACCOUNT)
+client.initialize()
+
+# Example to create a Google Sheets Client instance
+service = client.create_service("sheets", "v4")
 ```
 
 ## Development
@@ -139,6 +161,7 @@ If you want to add a new service, you can add it to the `services` directory and
     ├── ...
     └── services
         ├── ...
+        ├── services.json # This needs to be modified if a new API client is added to the services
         ├── drive
         │   └── ...
         ├── sheets
