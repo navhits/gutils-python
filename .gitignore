@@ -151,6 +151,7 @@ venv.bak/
 
 # Project related stuff
 *.json
+!services.json
 id_rsa
 *.env
 creds.env
