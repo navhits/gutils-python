@@ -10,9 +10,9 @@ python3 -m venv venv
 . venv/bin/activate
 
 # Install the package
-# Note: Use till commit hash `ff58e1d4da3c203790779f53f9ec884e7388298d` as its stable to use for now.
+# Note: Use till commit hash `3206d8e0846731c85c62291e004fafe16e9dca1b` as its stable to use for now.
 
-pip3 install git+https://github.com/navhits/gutils-python.git@ff58e1d4da3c203790779f53f9ec884e7388298d
+pip3 install git+https://github.com/navhits/gutils-python.git@3206d8e0846731c85c62291e004fafe16e9dca1b
 ```
 
 ### Evironment variables
