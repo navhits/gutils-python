@@ -38,9 +38,10 @@ class GoogleApiClient:
         else:
             raise ValueError(f"{login_type} is not a valid Login type")
 
-        if login_type == LoginType.SERVICE_ACCOUNT:
+        if token:
             self.token = token.get_token()
-        if login_type == LoginType.OAUTH2:
+            login_type = LoginType.OAUTH2        
+        if config:
             self.config = config.get_secret()
 
     def _get_client_config(self) -> typing.Union[dict, None]:

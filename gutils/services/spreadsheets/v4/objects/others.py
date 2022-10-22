@@ -16,8 +16,6 @@ class MatchedDeveloperMetadata(BaseModel):
     dataFilters: typing.List[DataFilter]
 
 class ValueRange(BaseModel):
-    range: str
-    majorDimension: Dimension
     values: list
 
 class DataFilterValueRange(BaseModel):
@@ -39,7 +37,7 @@ class UpdateValuesResponse(BaseModel):
     updatedRows: str
     updatedColumns: str
     updatedCells: int
-    updatedData: ValueRange
+    updatedData: typing.Optional[ValueRange] = None
 
 class UpdateValuesByDataFilterResponse(BaseModel):
     updatedRange: str

@@ -23,7 +23,7 @@ class SpreadsheetClient:
         """
         Creates a new Google Sheet with the given title.
         """
-        response = self.service.spreadsheets().create(body=body.json()).execute()
+        response = self.service.spreadsheets().create(body=body.dict()).execute()
         return Spreadsheet(**response)
 
     def get(self, spreadsheet_id: str, ranges: list, include_grid_data: bool = None) -> Spreadsheet:
@@ -58,7 +58,7 @@ class SpreadsheetClient:
         Retrivies all developer meta data matching the Data Filter
         """
         response = self.service.spreadsheets().developerMetadata().search(
-            spreadsheetId=spreadsheet_id, body=body.json()).execute()
+            spreadsheetId=spreadsheet_id, body=body.dict()).execute()
         return MatchedDeveloperMetadata(**response)
 
     def copy_to(self, spreadsheet_id: str, sheet_id: str, destination_spreadsheet_id: str) -> SheetProperties:
@@ -95,7 +95,7 @@ class SpreadsheetClient:
                     range=sheet_range, valueInputOption=input_option.value,
                     responseValueRenderOption=response_render_option.value,
                     responseDateTimeRenderOption=response_datetime_render_option.value,
-                    body=body.json()).execute()
+                    body=body.dict()).execute()
         return UpdateValuesResponse(**response)
 
     def append_values(self, spreadsheet_id: str, body: ValueRange,
@@ -112,7 +112,7 @@ class SpreadsheetClient:
                         insertDataOption=insert_data_option.value,
                         responseValueRenderOption=response_render_option.value,
                         responseDateTimeRenderOption=response_datetime_render_option.value,
-                        body=body.json()).execute()
+                        body=body.dict()).execute()
         return AppendValueResponse(**response)
 
     def clear_values(self, spreadsheet_id: str, sheet_range: str) -> ClearValuesResponse:
@@ -143,7 +143,7 @@ class SpreadsheetClient:
         Updates a set of values for the given set of ranges
         """
         response = self.service.spreadsheets().values().batchGetByDataFilter(
-            spreadsheetId=spreadsheet_id, body=body.json()).execute()
+            spreadsheetId=spreadsheet_id, body=body.dict()).execute()
         return BatchGetValuesByDataFilterRequest(**response)
     
     def batch_update_values(self, spreadsheet_id: str, body: BatchUpdateValuesRequest) -> BatchUpdateValuesResponse:
@@ -151,7 +151,7 @@ class SpreadsheetClient:
         Updates a set of values for the given set of ranges
         """
         response = self.service.spreadsheets().values().batchUpdate(
-            spreadsheetId=spreadsheet_id, body=body.json()).execute()
+            spreadsheetId=spreadsheet_id, body=body.dict()).execute()
         return BatchUpdateValuesResponse(**response)
 
     def batch_update_values_by_data_filter(self, spreadsheet_id: str,
@@ -160,7 +160,7 @@ class SpreadsheetClient:
         Updates a set of values for the given filter sets
         """
         response = self.service.spreadsheets().values().batchUpdateByDataFilter(
-            spreadsheetId=spreadsheet_id, body=body.json()).execute()
+            spreadsheetId=spreadsheet_id, body=body.dict()).execute()
         return BatchUpdateValuesByDataFilterResponse(**response)
 
     def batch_clear_values(self, spreadsheet_id: str, body: BatchClearValuesRequest) -> BatchClearValuesResponse:
@@ -169,10 +169,10 @@ class SpreadsheetClient:
         Clears fully if no range is given
         """
         response = self.service.spreadsheets().values().batchClear(
-            spreadsheetId=spreadsheet_id, body=body.json()).execute()
+            spreadsheetId=spreadsheet_id, body=body.dict()).execute()
         return BatchClearValuesResponse(**response)
 
     def batch_clear_values_by_data_filter(self, spreadsheet_id: str, body: DataFilters) -> BatchClearValuesResponse:
         response = self.service.spreadsheets().values().batchClearByDataFilter(
-            spreadsheetId=spreadsheet_id, body=body.json())
+            spreadsheetId=spreadsheet_id, body=body.dict())
         return BatchClearValuesResponse(**response)
