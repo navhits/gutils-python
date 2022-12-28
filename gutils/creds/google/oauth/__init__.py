@@ -40,10 +40,10 @@ class Oauth2Token:
     _oauth_cred_dir = os.path.join(_temp_dir, "gutils/creds/google/oauth")
     def __init__(self, client_id: str = None, client_secret: str = None,
                  token: str = None, refresh_token: str = None, token_file: str = "token.json.pickle") -> None:
-        self.client_id = client_id if client_id else Secret(environment_variable="GCP_OAUTH_CLIENT_ID", required=True)
-        self.client_secret = client_secret if client_secret else Secret(environment_variable="GCP_OAUTH_CLIENT_SECRET", required=True)
+        self.client_id = client_id if client_id else Secret(environment_variable="GCP_OAUTH_CLIENT_ID", required=False)
+        self.client_secret = client_secret if client_secret else Secret(environment_variable="GCP_OAUTH_CLIENT_SECRET", required=False)
         self.token = token if token else Secret(environment_variable="GCP_OAUTH_AUTH_TOKEN", required=False)
-        self.refresh_token = refresh_token if refresh_token else Secret(environment_variable="GCP_OAUTH_REFRESH_TOKEN", required=True)
+        self.refresh_token = refresh_token if refresh_token else Secret(environment_variable="GCP_OAUTH_REFRESH_TOKEN", required=False)
         self._token_file = token_file
 
     def _build_token(self) -> dict:
