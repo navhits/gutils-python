@@ -44,13 +44,14 @@ class Oauth2Token:
         self.client_secret = client_secret if client_secret else Secret(environment_variable="GCP_OAUTH_CLIENT_SECRET", required=False)
         self.token = token if token else Secret(environment_variable="GCP_OAUTH_AUTH_TOKEN", required=False)
         self.refresh_token = refresh_token if refresh_token else Secret(environment_variable="GCP_OAUTH_REFRESH_TOKEN", required=False)
+        self.token_uri = "https://oauth2.googleapis.com/token"
         self._token_file = token_file
 
     def _build_token(self) -> dict:
         return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
 
     def _is_mandatory_keys_set(self) -> bool:
-        return True if self.client_id and self.client_secret and self.refresh_token else False
+        return True if self.refresh_token and self.client_id and self.client_secret else False
             
     def get_token(self) -> typing.Union[dict, None]:
         if os.path.exists(f"{self._oauth_cred_dir}/{self._token_file}"):
@@ -68,6 +69,7 @@ class Oauth2Token:
     def set_token(self) -> typing.Union[dict, None]:
         if self._is_mandatory_keys_set():
             if os.path.exists(f"{self._oauth_cred_dir}/{self._token_file}"):
+                print(self._oauth_cred_dir)
                 try:
                     with open(f"{self._oauth_cred_dir}/{self._token_file}", "wb") as pickled_file:
                         pickled_file.write(pickle.dumps(self._build_token()))

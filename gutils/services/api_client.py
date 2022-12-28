@@ -2,15 +2,15 @@
 This module contains the necessay methods for services that require auth to access them.
 """
 import json
-from pathlib import Path
 import typing
 from importlib import import_module
+from pathlib import Path
 
-from googleapiclient import discovery
-from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials as OauthCredentials
 from google.oauth2.service_account import Credentials as ServiceCredentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient import discovery
 from httplib2 import Credentials
 
 from gutils.creds.google.oauth import Oauth2Creds, Oauth2Token
@@ -37,7 +37,7 @@ class GoogleApiClient:
             self.login_type = login_type
         else:
             raise ValueError(f"{login_type} is not a valid Login type")
-
+        
         if token:
             self.token = token.get_token()
             login_type = LoginType.OAUTH2        
@@ -69,7 +69,7 @@ class GoogleApiClient:
         Sets the authorization token.
         """
         token = Oauth2Token(client_id, client_secret, token, refresh_token)
-        self.token = token.get_token()
+        self.token = token.set_token()
 
     def oauth2_login(self, trigger_new_flow: bool=False) -> Credentials:
         """
@@ -81,7 +81,6 @@ class GoogleApiClient:
         if trigger_new_flow:
             self.revoke_oauth_permissions()
             self.oauth_revoked = True
-        
         if not self.oauth_revoked:
             token = self._get_authz_token()
         if token:
@@ -91,12 +90,13 @@ class GoogleApiClient:
                 credentials.refresh(Request())
             else:
                 if not self.config:
-                    raise ValueError("Missing client config for Oauth2 login")
+                    raise ValueError("""Missing client config for Oauth2 login. Please check if the following is set.
+                                     > `client_id`, `client_secret`, `refresh_token`""")
                 flow = InstalledAppFlow.from_client_config(self.config, scopes = self.scopes)
                 credentials = flow.run_local_server(port=0)
 
             creds = json.loads(credentials.to_json())
-            
+
             self.set_authz_token(**creds)
 
         self.credentials = credentials
