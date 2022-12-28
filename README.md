@@ -66,6 +66,8 @@ service = client.create_service("sheets", "v4")
 If you set these additional environment variables if you have them, to skip the oauth flow
 
 ```bash
+export GCP_OAUTH_CLIENT_ID=dummy-client.apps.googleusercontent.com
+export GCP_OAUTH_CLIENT_SECRET=dummy-secret
 export GCP_OAUTH_AUTH_TOKEN=dummy-token # Optional
 export GCP_OAUTH_REFRESH_TOKEN=dummy-refresh-token
 ```
