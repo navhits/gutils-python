@@ -58,7 +58,7 @@ client = GoogleApiClient(scopes=scopes, config=config, login_type=LoginType.OAUT
 client.initialize()
 
 # Example to create a Google Sheets Client instance
-service = client.create_service("sheets", "v4")
+service = client.get_resource("sheets", "v4")
 ```
 
 ### Using Oauth Authorization token directly
@@ -99,7 +99,7 @@ client.set_authz_token(token)
 client.initialize()
 
 # Example to create a Google Sheets Client instance
-service = client.create_service("sheets", "v4")
+service = client.get_resource("sheets", "v4")
 
 ```
 
@@ -134,7 +134,7 @@ client = GoogleApiClient(scopes=scopes, config=config, LoginType.SERVICE_ACCOUNT
 client.initialize()
 
 # Example to create a Google Sheets Client instance
-service = client.create_service("sheets", "v4")
+service = client.get_resource("sheets", "v4")
 ```
 
 ## Development
