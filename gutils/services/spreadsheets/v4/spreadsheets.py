@@ -78,13 +78,12 @@ class SpreadsheetClient:
         Reads a given range of data from a Google Sheet.
         """
         response = self.service.spreadsheets().values().get(spreadsheetId=spreadsheet_id,
-                range=sheet_range, Dimension=dimension.value,
+                range=sheet_range, majorDimension=dimension.value,
                 valueRenderOption=value_render_option.value,
                 dateTimeRenderOption=datetime_render_option.value).execute()
         return ValueRange(**response)
 
     def update_values(self, spreadsheet_id: str, body: ValueRange, sheet_range: str,
-        dimension: Dimension = Dimension.ROWS,
         input_option: ValueInputOption = ValueInputOption.RAW,
         response_render_option: ValueRenderOption = ValueRenderOption.FORMATTED_VALUE,
         response_datetime_render_option: DateTimeRenderOption = DateTimeRenderOption.SERIAL_NUMBER) -> UpdateValuesResponse:
