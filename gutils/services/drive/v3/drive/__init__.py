@@ -12,7 +12,7 @@ from gutils.services.enums import *
 
 # pylint: disable=line-too-long
 # pylint: disable=no-member
-class DriveClient:
+class Drive:
     """
     The Drive class extends the GoogleApiClient class to authenticate to the Drive APIs
     """

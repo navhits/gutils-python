@@ -4,11 +4,11 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-
-from gutils.services.spreadsheets.v4.objects.general import *
-from gutils.services.spreadsheets.v4.objects.cells import CellFormat
-from gutils.services.spreadsheets.v4.objects.sheets import Sheet
-from gutils.services.spreadsheets.v4.objects.developer_metadata import DeveloperMetadata
+from gutils.services.sheets.v4.objects.cells import CellFormat
+from gutils.services.sheets.v4.objects.developer_metadata import \
+    DeveloperMetadata
+from gutils.services.sheets.v4.objects.general import *
+from gutils.services.sheets.v4.objects.sheets import Sheet
 
 
 class RecalculationInterval(str, enum.Enum):

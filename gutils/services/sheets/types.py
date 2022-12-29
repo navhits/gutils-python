@@ -5,16 +5,28 @@ import enum
 
 from pydantic import BaseModel
 
-from gutils.services.spreadsheets.v4.objects.developer_metadata import (DeveloperMetadataLocationType,
-                                                                     DeveloperMetadataLocation,
-                                                                     DeveloperMetadataVisibility)
-from gutils.services.spreadsheets.v4.objects.general import GridRange
+from gutils.services.sheets.v4.objects.developer_metadata import (
+    DeveloperMetadataLocation, DeveloperMetadataLocationType,
+    DeveloperMetadataVisibility)
+from gutils.services.sheets.v4.objects.general import GridRange
+
 
 class ErrorCode(str, enum.Enum):
     ERROR_CODE_UNSPECIFIED = "ERROR_CODE_UNSPECIFIED"
     DOCUMENT_TOO_LARGE_TO_EDIT = "DOCUMENT_TOO_LARGE_TO_EDIT"
     DOCUMENT_TOO_LARGE_TO_LOAD = "DOCUMENT_TOO_LARGE_TO_LOAD"
-    
+
+class Dimension(str, enum.Enum):
+    """
+    Indicates which dimension an operation should apply to
+    """
+    DIMENSION_UNSPECIFIED = "DIMENSION_UNSPECIFIED"
+    ROWS = "ROWS"
+    COLUMNS = "COLUMNS"
+
+class DimensionRange(BaseModel):
+    sheetId: str
+
 class ValueInputOption(str, enum.Enum):
     """
     Enum for the value input options.

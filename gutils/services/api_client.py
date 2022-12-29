@@ -119,25 +119,24 @@ class GoogleApiClient:
         self.credentials = credentials
         return credentials
             
-    def create_service(self, service_name: str, version: str) -> typing.Union[object, None]:
+    def get_resource(self, service_name: str, version: str) -> typing.Union[object, None]:
         """
         Creates and returns a Google API service Resource object that has necessary methods
         to interact with the services.
         """
-        service = discovery.build(service_name, version, credentials=self.credentials,
-                                       cache_discovery=False)
+        service = self.create_service(service_name, version)
         if service:
             with open(Path(__file__).parent.absolute().joinpath("services.json"), mode="r") as json_doc:
                 services = json.load(json_doc)
-            for name, attributes in services.get("service").items():
+            for name, attributes in services.items():
                 if name == service_name.lower() and attributes.get("version") == version:
-                    path = f"{services.get('entrypoint')}.{attributes.get('module')}.{attributes.get('version')}.{attributes.get('module')}"
+                    path = f"gutils.services.{attributes.get('module')}.{attributes.get('version')}.{attributes.get('resource')}"
                     module = import_module(path)
                     client = getattr(module, f"{attributes.get('class')}")
                     return client(service=service)
-        return None            
+        return None
 
-    def return_service(self, service_name: str, version: str) -> typing.Union[object, None]:
+    def create_service(self, service_name: str, version: str) -> typing.Union[object, None]:
         service = discovery.build(service_name, version, credentials=self.credentials,
                                        cache_discovery=False)
         return service if service else None

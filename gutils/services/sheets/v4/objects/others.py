@@ -2,10 +2,12 @@ import typing
 
 from pydantic import BaseModel
 
-from gutils.services.spreadsheets.v4.types import (DataFilter, ValueInputOption, ValueRenderOption, DateTimeRenderOption)
-                                                   
-from gutils.services.spreadsheets.v4.objects.developer_metadata import DeveloperMetadata
-from gutils.services.spreadsheets.v4.objects.general import Dimension
+from gutils.services.sheets.v4.objects.developer_metadata import \
+    DeveloperMetadata
+from gutils.services.sheets.v4.objects.general import Dimension
+from gutils.services.sheets.v4.types import (DataFilter, DateTimeRenderOption,
+                                             ValueInputOption,
+                                             ValueRenderOption)
 
 
 class DataFilters(BaseModel):

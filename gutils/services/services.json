@@ -1,15 +1,14 @@
 {
-    "entrypoint": "gutils.services",
-    "service": {
-        "sheets": {
-            "module": "spreadsheets",
-            "version": "v4",
-            "class": "SpreadsheetClient"
-        },
-        "drive": {
-            "module": "drive",
-            "version": "v3",
-            "class": "DriveClient"
-        }
+    "sheets": {
+        "module": "sheets",
+        "version": "v4",
+        "resource": "spreadsheets",
+        "class": "Spreadsheets"
+    },
+    "drive": {
+        "module": "drive",
+        "version": "v3",
+        "resource": "drive",
+        "class": "Drive"
     }
 }

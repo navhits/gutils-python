@@ -2,8 +2,9 @@ import enum
 
 from pydantic import BaseModel
 
-from gutils.services.spreadsheets.v4.objects.general import *
-from gutils.services.spreadsheets.v4.objects.pivot_tables import PivotTable
+from gutils.services.sheets.v4.objects.general import *
+from gutils.services.sheets.v4.objects.pivot_tables import PivotTable
+
 
 class NumberFormatType(str, enum.Enum):
     NUMBER_FORMAT_TYPE_UNSPECIFIED = "NUMBER_FORMAT_TYPE_UNSPECIFIED"

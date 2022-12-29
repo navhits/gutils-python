@@ -1,10 +1,9 @@
 import enum
 import typing
 
-
 from pydantic import BaseModel
 
-from gutils.services.spreadsheets.v4.objects.general import *
+from gutils.services.sheets.v4.objects.general import *
 
 
 class DeveloperMetadataLocationType(str, enum.Enum):
