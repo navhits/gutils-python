@@ -3,11 +3,12 @@ import typing
 
 from pydantic import BaseModel
 
-from gutils.services.spreadsheets.v4.objects.cells import CellData, CellFormat
+from gutils.services.sheets.v4.objects.cells import CellData, CellFormat
+from gutils.services.sheets.v4.objects.charts import EmbeddedChart
+from gutils.services.sheets.v4.objects.developer_metadata import \
+    DeveloperMetadata
+from gutils.services.sheets.v4.objects.general import *
 
-from gutils.services.spreadsheets.v4.objects.general import *
-from gutils.services.spreadsheets.v4.objects.charts import EmbeddedChart
-from gutils.services.spreadsheets.v4.objects.developer_metadata import DeveloperMetadata
 
 class SheetType(str, enum.Enum):
     SHEET_TYPE_UNSPECIFIED = "SHEET_TYPE_UNSPECIFIED"
